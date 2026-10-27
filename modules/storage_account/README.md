@@ -1,6 +1,6 @@
 # Storage Account Module
 
-This module creates an Azure Storage Account with optional containers, queues, tables, and file shares.
+This module creates an Azure Storage Account with optional network rules.
 
 ## Prerequisites
 
@@ -11,9 +11,7 @@ This module creates an Azure Storage Account with optional containers, queues, t
 
 - Creates storage account with configurable tier and replication
 - Security features (HTTPS only, TLS version, public access control)
-- Optional blob properties (versioning, change feed, retention)
 - Optional network rules for restricted access
-- Creates blob containers, queues, tables, and file shares
 - Comprehensive validation
 
 ## Usage
@@ -37,7 +35,7 @@ module "storage_account" {
 }
 ```
 
-### With Containers and Network Rules
+### With Network Rules
 
 ```hcl
 module "storage_account" {
@@ -54,34 +52,10 @@ module "storage_account" {
   allow_public_access           = false
   public_network_access_enabled = true
 
-  enable_blob_properties        = true
-  blob_versioning_enabled       = true
-  blob_delete_retention_days    = 7
-  container_delete_retention_days = 7
-
   enable_network_rules           = true
   network_rules_default_action   = "Deny"
   network_rules_ip_rules         = ["203.0.113.0/24"]
   network_rules_bypass           = ["AzureServices"]
-
-  containers = {
-    "data" = {
-      access_type = "private"
-    }
-    "backups" = {
-      access_type = "private"
-    }
-  }
-
-  queues = ["processing", "notifications"]
-
-  tables = ["logs", "metrics"]
-
-  file_shares = {
-    "documents" = {
-      quota = 100
-    }
-  }
 
   tags = {
     environment = "production"
@@ -102,16 +76,12 @@ module "storage_account" {
 | enable_https_traffic_only | Enable HTTPS only | `bool` | `true` | no |
 | min_tls_version | Minimum TLS version | `string` | `"TLS1_2"` | no |
 | allow_public_access | Allow public blob access | `bool` | `false` | no |
-| enable_blob_properties | Enable blob properties | `bool` | `false` | no |
-| blob_versioning_enabled | Enable blob versioning | `bool` | `false` | no |
-| blob_delete_retention_days | Blob delete retention days (0 to disable) | `number` | `0` | no |
+| public_network_access_enabled | Enable public network access | `bool` | `true` | no |
 | enable_network_rules | Enable network rules | `bool` | `false` | no |
 | network_rules_default_action | Default action (Allow or Deny) | `string` | `"Deny"` | no |
 | network_rules_ip_rules | Allowed IP addresses/CIDR blocks | `list(string)` | `[]` | no |
-| containers | Map of blob containers to create | `map(object)` | `{}` | no |
-| queues | Set of queue names | `set(string)` | `[]` | no |
-| tables | Set of table names | `set(string)` | `[]` | no |
-| file_shares | Map of file shares with quotas | `map(object)` | `{}` | no |
+| network_rules_subnet_ids | Allowed subnet IDs | `list(string)` | `[]` | no |
+| network_rules_bypass | Services to bypass network rules | `list(string)` | `["AzureServices"]` | no |
 | tags | Tags to apply to resources | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -126,7 +96,3 @@ module "storage_account" {
 | primary_file_endpoint | Primary file endpoint |
 | primary_access_key | Primary access key (sensitive) |
 | primary_connection_string | Primary connection string (sensitive) |
-| container_names | List of created container names |
-| queue_names | List of created queue names |
-| table_names | List of created table names |
-| file_share_names | List of created file share names |

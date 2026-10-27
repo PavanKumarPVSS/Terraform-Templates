@@ -75,44 +75,6 @@ variable "public_network_access_enabled" {
   default     = true
 }
 
-# Blob Properties
-variable "enable_blob_properties" {
-  description = "Enable blob properties configuration"
-  type        = bool
-  default     = false
-}
-
-variable "blob_versioning_enabled" {
-  description = "Enable blob versioning"
-  type        = bool
-  default     = false
-}
-
-variable "blob_change_feed_enabled" {
-  description = "Enable blob change feed"
-  type        = bool
-  default     = false
-}
-
-variable "blob_last_access_time_enabled" {
-  description = "Enable last access time tracking"
-  type        = bool
-  default     = false
-}
-
-variable "blob_delete_retention_days" {
-  description = "Number of days to retain deleted blobs (0 to disable)"
-  type        = number
-  default     = 0
-}
-
-variable "container_delete_retention_days" {
-  description = "Number of days to retain deleted containers (0 to disable)"
-  type        = number
-  default     = 0
-}
-
-# Network Rules
 variable "enable_network_rules" {
   description = "Enable network rules"
   type        = bool
@@ -145,35 +107,6 @@ variable "network_rules_bypass" {
   description = "Services to bypass network rules"
   type        = list(string)
   default     = ["AzureServices"]
-}
-
-# Containers, Queues, Tables, Shares
-variable "containers" {
-  description = "Map of blob containers to create"
-  type = map(object({
-    access_type = string
-  }))
-  default = {}
-}
-
-variable "queues" {
-  description = "Set of queue names to create"
-  type        = set(string)
-  default     = []
-}
-
-variable "tables" {
-  description = "Set of table names to create"
-  type        = set(string)
-  default     = []
-}
-
-variable "file_shares" {
-  description = "Map of file shares to create"
-  type = map(object({
-    quota = number
-  }))
-  default = {}
 }
 
 variable "tags" {

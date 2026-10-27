@@ -51,23 +51,3 @@ output "secondary_connection_string" {
   value       = azurerm_storage_account.storage.secondary_connection_string
   sensitive   = true
 }
-
-output "container_names" {
-  description = "Names of created containers"
-  value       = [for c in azurerm_storage_container.containers : c.name]
-}
-
-output "queue_names" {
-  description = "Names of created queues"
-  value       = [for q in azurerm_storage_queue.queues : q.name]
-}
-
-output "table_names" {
-  description = "Names of created tables"
-  value       = [for t in azurerm_storage_table.tables : t.name]
-}
-
-output "file_share_names" {
-  description = "Names of created file shares"
-  value       = [for s in azurerm_storage_share.shares : s.name]
-}
