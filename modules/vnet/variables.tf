@@ -18,26 +18,16 @@ variable "address_space" {
   type        = list(string)
 }
 
-variable "public_subnet_name" {
-  description = "Name of the public subnet for Databricks"
-  type        = string
-  default     = "databricks-public-subnet"
-}
+variable "subnets" {
+  description = "Subnets to create, keyed by subnet name"
+  type = map(object({
+    address_prefixes = list(string)
+  }))
 
-variable "private_subnet_name" {
-  description = "Name of the private subnet for Databricks"
-  type        = string
-  default     = "databricks-private-subnet"
-}
-
-variable "public_subnet_prefix" {
-  description = "Address prefix for public subnet"
-  type        = list(string)
-}
-
-variable "private_subnet_prefix" {
-  description = "Address prefix for private subnet"
-  type        = list(string)
+  validation {
+    condition     = length(var.subnets) > 0
+    error_message = "At least one subnet must be configured."
+  }
 }
 
 variable "tags" {

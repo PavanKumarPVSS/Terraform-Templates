@@ -1,6 +1,6 @@
-# Virtual Network Module
+# General Virtual Network Module
 
-This module creates an Azure Virtual Network with subnets and network security groups.
+This module creates an Azure Virtual Network, configurable plain subnets, and one empty network security group associated with each subnet. It does not configure service delegations or NSG rules.
 
 ## Prerequisites
 
@@ -9,9 +9,9 @@ This module creates an Azure Virtual Network with subnets and network security g
 ## Features
 
 - Creates a VNet with configurable address space
-- Creates public and private subnets
-- Creates and associates NSGs to subnets
-- Supports custom NSG rules
+- Creates any number of subnets from a name-to-prefix map
+- Creates and associates one NSG per subnet
+- Leaves subnet delegations and NSG rules to the consuming configuration
 
 ## Usage
 
@@ -24,10 +24,14 @@ module "vnet" {
   resource_group_name = "my-resource-group"
   address_space       = ["10.0.0.0/16"]
 
-  public_subnet_name    = "public-subnet"
-  private_subnet_name   = "private-subnet"
-  public_subnet_prefix  = ["10.0.1.0/24"]
-  private_subnet_prefix = ["10.0.2.0/24"]
+  subnets = {
+    app = {
+      address_prefixes = ["10.0.1.0/24"]
+    }
+    data = {
+      address_prefixes = ["10.0.2.0/24"]
+    }
+  }
 
   tags = {
     environment = "production"
@@ -43,10 +47,7 @@ module "vnet" {
 | resource_group_name | Name of the resource group | `string` | n/a | yes |
 | location | Azure region | `string` | n/a | yes |
 | address_space | Address space for the VNet | `list(string)` | n/a | yes |
-| public_subnet_name | Name of the public subnet | `string` | n/a | yes |
-| private_subnet_name | Name of the private subnet | `string` | n/a | yes |
-| public_subnet_prefix | Address prefix for public subnet | `list(string)` | n/a | yes |
-| private_subnet_prefix | Address prefix for private subnet | `list(string)` | n/a | yes |
+| subnets | Subnets keyed by name, each with `address_prefixes` | `map(object({ address_prefixes = list(string) }))` | n/a | yes |
 | tags | Tags to apply to resources | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -55,7 +56,5 @@ module "vnet" {
 |------|-------------|
 | vnet_id | ID of the virtual network |
 | vnet_name | Name of the virtual network |
-| public_subnet_id | ID of the public subnet |
-| private_subnet_id | ID of the private subnet |
-| public_nsg_id | ID of the public NSG |
-| private_nsg_id | ID of the private NSG |
+| subnet_ids | Subnet IDs keyed by subnet name |
+| network_security_group_ids | NSG IDs keyed by subnet name |
